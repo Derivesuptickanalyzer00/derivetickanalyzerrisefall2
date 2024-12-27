@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Untitled</title>
+  
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Untitled</title>
+  
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>live Chart</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #eaf7f8;
+      flex-direction: column;
+      padding: 0 10px;
+    }
+    .chart-container {
+      width: 100%;
+      max-width: 90%; /* Adjusted for mobile size */
+      height: 30vh; /* Adjusted for mobile view */
+      margin-bottom: 20px;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Live Chart</h1>
+  <div class="chart-container">
+    <canvas id="dynamicChart"></canvas>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('dynamicChart').getContext('2d');
+
+    // Initialize the chart
+    const dynamicChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Entry Spot', 'Point 2', 'Point 3', 'Point 4', 'Exit Spot'], // Example labels
+        datasets: [{
+          label: 'Price',
+          data: [1536, 1535.5, 1535, 1534.5, 1534], // Example data points
+          borderColor: '#62a4ab',
+          backgroundColor: 'rgba(98, 164, 171, 0.2)',
+          borderWidth: 2,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            enabled: true
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            grid: {
+              color: '#d3e9eb'
+            }
+          },
+          x: {
+            grid: {
+              color: '#d3e9eb'
+            }
+          }
+        }
+      }
+    });
+
+    // Simulate dynamic updates
+    setInterval(() => {
+      const newDataPoint = Math.random() * 1 + 1533.5; // Random data for the chart
+      dynamicChart.data.labels.push(`Point ${dynamicChart.data.labels.length + 1}`);
+      dynamicChart.data.datasets[0].data.push(newDataPoint);
+
+      // Remove old data to keep the chart moving
+      if (dynamicChart.data.labels.length > 6) {
+        dynamicChart.data.labels.shift();
+        dynamicChart.data.datasets[0].data.shift();
+      }
+
+      dynamicChart.update();
+    }, 2000); // Update every 2 seconds
+  </script>
+</body>
+</html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tick Analyzer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+
+        .buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .buttons button.up {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .buttons button.down {
+            background-color: #F44336;
+            color: white;
+        }
+
+        .result {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .result.green {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .result.red {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .controls button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .controls button.reset {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .controls button.about {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        /* Candle balls styles */
+        .candles {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .candle-ball {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            color: white;
+            animation: move 2s infinite;
+        }
+
+        .candle-ball.green {
+            background-color: green;
+        }
+
+        .candle-ball.red {
+            background-color: red;
+        }
+
+        @keyframes move {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> Tick Analyzer</h1>
+
+        <!-- Add Candle Balls Section -->
+        <div class="candles">
+            <div class="candle-ball" id="candle1"></div>
+            <div class="candle-ball" id="candle2"></div>
+            <div class="candle-ball" id="candle3"></div>
+            <div class="candle-ball" id="candle4"></div>
+            <div class="candle-ball" id="candle5"></div>
+            <div class="candle-ball" id="candle6"></div>
+        </div>
+
+        <div class="section">
+            <label for="market">Market:</label>
+            <select id="market">
+                <option>Volatility Index 10</option>
+                <option>Volatility Index 25</option>
+                <option>Volatility Index 50</option>
+                <option>Volatility Index 75</option>
+                <option>Volatility Index 100</option>
+            </select>
+        </div>
+
+        <div class="section">
+            <label for="trade-type">Trade Type:</label>
+            <select id="trade-type">
+                <option>Rise / Fall</option>
+                <option>Up / Down</option>
+                <option>Up / Lover</option>
+                <option>Touch / No Touch</option>
+            </select>
+        </div>
+
+        <div class="section">
+            <label for="stake">Stake:</label>
+            <input type="number" id="stake" placeholder="Enter your stake">
+        </div>
+
+        <div class="buttons">
+            <button class="up" onclick="recordClick('up')">Up</button>
+            <button class="down" onclick="recordClick('down')">Down</button>
+        </div>
+
+        <div class="section">
+            <label for="tick-count">Tick Count:</label>
+            <div id="tick-count">0</div>
+        </div>
+
+        <div class="result" id="result">Result will appear here</div>
+
+        <div class="controls">
+            <button class="reset" onclick="resetAnalyzer()">Reset</button>
+            <button class="about" onclick="showAbout()">About</button>
+        </div>
+    </div>
+
+    <script>
+        let upCount = 0;
+        let downCount = 0;
+
+        // Function to change color and percentage for candle balls
+        function changeCandleBalls() {
+            for (let i = 1; i <= 6; i++) {
+                let candle = document.getElementById('candle' + i);
+                let percentage = Math.floor(Math.random() * 100);
+                candle.textContent = `${percentage}%`;
+
+                if (percentage > 50) {
+                    candle.className = 'candle-ball green';
+                } else {
+                    candle.className = 'candle-ball red';
+                }
+            }
+        }
+
+        // Run candle ball color and percentage change every second
+        setInterval(changeCandleBalls, 1000);
+
+        function recordClick(type) {
+            if (type === 'up') {
+                upCount++;
+            } else if (type === 'down') {
+                downCount++;
+            }
+
+            updateResult();
+        }
+
+        function updateResult() {
+            const total = upCount + downCount;
+            const resultDiv = document.getElementById('result');
+            const tickCountDiv = document.getElementById('tick-count');
+            tickCountDiv.textContent = total;
+
+            if (total >= 30) {
+                resultDiv.textContent = upCount > downCount ? 'Strong Buy' : 'Strong Sell';
+            } else if (total >= 15) {
+                resultDiv.textContent = upCount > downCount ? 'Medium Up' : 'Medium Down';
+            } else if (total > 0) {
+                resultDiv.textContent = upCount > downCount ? 'Buy' : 'Sell';
+            } else {
+                resultDiv.textContent = 'Result will appear here';
+            }
+
+            if (upCount > downCount) {
+                resultDiv.className = 'result green';
+            } else if (downCount > upCount) {
+                resultDiv.className = 'result red';
+            } else {
+                resultDiv.className = 'result';
+            }
+        }
+
+        function resetAnalyzer() {
+            upCount = 0;
+            downCount = 0;
+            updateResult();
+        }
+
+        function showAbout() {
+            alert('Tick Analyzer App v1.0\nDeveloped to analyze ticks based on up/down clicks.');
+        }
+    </script>
+</body>
+</html>
+<!-- partial -->
+  
+</body>
+</html>
+<!-- partial -->
+  
+</body>
+</html>
